@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+option go_package = "api/grpc/proto";
+
+package record;
+
+message Password {
+  string login = 2;
+  string password = 3;
+}
+
+message Text {
+  string text = 2;
+}
+
+message Binary {
+  bytes data = 2;
+}
+
+message Card {
+  string number = 2;
+  string expired = 3;
+  string csv = 4;
+  string holder = 5;
+}
+
+message Record {
+  string id = 1;
+  string user = 2;
+  string type = 3;
+  oneof record {Password password = 4; Text text = 5; Binary binary = 6; Card card = 7;}
+}
+
+message RecordCreateRequest {
+  string token = 1;
+  oneof record {Password password = 2; Text text = 3; Binary binary = 4; Card card = 5;}
+}
+
+message RecordUpdateRequest {
+  string id = 1;
+  string token = 2;
+  oneof record {Password password = 3; Text text = 4; Binary binary = 5; Card card = 6;}
+}
+
+message RecordDeleteRequest {
+  string token = 1;
+  string id = 2;
+}
+
+message RecordGetRequest {
+  string id = 1;
+  string token = 2;
+}
+
+message RecordCreatedResponse {
+  string id = 1;
+  string error = 2;
+}
+
+message RecordUpdatedResponse {
+  string id = 1;
+  string error = 2;
+}
+
+message RecordDeletedResponse {
+  string error = 1;
+}
+
+message RecordResponse {
+  Record record = 1;
+}
+
+message RecordsResponse {
+  repeated Record records = 1;
+}
+
+service Recorder {
+  rpc CreateRecord(RecordCreateRequest) returns (RecordCreatedResponse);
+  rpc UpdateRecord(RecordUpdatedResponse) returns (RecordUpdatedResponse);
+  rpc DeleteRecord(RecordDeleteRequest) returns (RecordDeletedResponse);
+  rpc GetRecord(RecordGetRequest) returns (RecordResponse);
+  rpc GetRecords(RecordUpdatedResponse) returns (RecordsResponse);
+}
